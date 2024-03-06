@@ -24,12 +24,30 @@ function App() {
       "I'm okay, although I dont really like being stuck in this computer",
     "who is your creator": "My creator is Marco.",
     "who are you": "I am the worlds worst voice assistant",
+    undefined: "I'm sorry I didn't understand that",
   };
 
   //Continous speech recognition
   useEffect(() => {
     SpeechRecognition.startListening({ continuous: true });
   }, []);
+
+  //Split the transcript into words
+  const words = transcript.split(" ");
+
+  //Find the index of the word "Iris"
+  irisIndex = words.indexOf("Iris");
+  // Display only the words after "iris" or the entire transcript if "iris" is not found
+  let relevantTranscript = "";
+  if (irisIndex !== -1) {
+    relevantTranscript = words.slice(irisIndex + 1).join(" ");
+  }
+
+  function speak(text) {
+    const synth = window.speechSynthesis;
+    const u = new SpeechSynthesisUtterance(text);
+    synth.speak(u);
+  }
 
   //Read response and reset transcript when user has finished speaking
   useEffect(() => {
@@ -46,6 +64,9 @@ function App() {
       const newResetTimeout = setTimeout(() => {
         resetTranscript();
         setIrisActive(false);
+
+        //Speak the response
+        speak(responses[relevantTranscript.toLowerCase()]);
       }, 2000);
 
       setResetTimeout(newResetTimeout);
@@ -56,18 +77,6 @@ function App() {
   //Does the browser support speech recognition
   if (!browserSupportsContinuousListening) {
     return <span>Browser doesn't support speech recognition.</span>;
-  }
-
-  //Split the transcript into words
-  const words = transcript.split(" ");
-
-  //Find the index of the word "Iris"
-  irisIndex = words.indexOf("Iris");
-  // Display only the words after "iris" or the entire transcript if "iris" is not found
-  let relevantTranscript = "";
-  if (irisIndex !== -1) {
-    relevantTranscript = words.slice(irisIndex + 1).join(" ");
-    console.log(irisActive);
   }
 
   return (
