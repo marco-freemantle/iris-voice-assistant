@@ -18,6 +18,7 @@ function App() {
 
   let irisIndex = -1;
 
+  // Object defining respone->answer relationship
   const responses = {
     hello: "Hi there!!!",
     "how are you":
